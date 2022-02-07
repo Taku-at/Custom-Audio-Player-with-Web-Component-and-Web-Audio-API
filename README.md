@@ -11,3 +11,5 @@
 ## Memo
 
 add controls to audio tag to display a player.
+
+The Element.shadowRoot read-only property represents the shadow root hosted by the element.
