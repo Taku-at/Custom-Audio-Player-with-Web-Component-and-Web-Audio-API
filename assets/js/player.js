@@ -4,6 +4,8 @@
     class AudioPlayer extends HTMLElement {
         // Create a property which is toggle boolean
         playing = false;
+        currentTime  = 0;
+        duration = 0;
         
         constructor() {
             // Inherite method from parent
@@ -35,6 +37,28 @@
         attachEvents() {
             // bind directly this fucntion
             this.playPauseBtn.addEventListener('click', this.togglePlay.bind(this));
+
+
+            // To get the audio duration which must listten to the loadedmetadata.
+            this.audio.addEventListener('loadedmetadata', () => {
+                this.progressBar.max = this.audio.duration;
+
+                const secs = parseInt(`${this.duration % 60}`, 10); // Reminder seconds
+                const mins = parseInt(`${this.duration/60}`, 10);
+                this.durationEl.textContent = `${mins}:${secs}`;
+
+                // this.durationEl.textContent = this.getTimeString(this.duration);
+                // this.updateAudioTime();
+
+                console.log('duration', this.audio.duration); // console the time
+                console.log('currentTime', this.audio.currentTime); // console the time
+
+            })
+            
+            // Time update event
+            this.audio.addEventListener('timeupdate', () => {
+                this.updateAudioTime(this.audio.currrentTime);
+            })
         }
 
         // Toggle method into async method
@@ -55,6 +79,14 @@
             }
         }
 
+        // Update time function
+        updateAudioTime(time) {
+            // Fisrt update current tiem property and progress bar of value
+            this.currentTime = time;
+            this.progressBar.value = this.currentTime;
+            
+        }
+
         // Render has become industry standard, render the object
         // Render the audio tag to HTML
         // render() create the element and select
@@ -62,11 +94,22 @@
             this.shadowRoot.innerHTML = `
             <audio src="./assets/src/penguinmusic-modern-chillout-12641.mp3" controls></audio>
             <button class="play-btn" type="button">play</button>
+
+            <!-- Indicators and range -->
+            <div class="progress-indicator">
+                <span class="current-time">0:00</span>
+                <input class="progress-bar" type="range" max="100" value="0">
+                <span class="duration">0:00</span>
             `;
 
             // Select the element
             this.audio = this.shadowRoot.querySelector('audio');
             this.playPauseBtn = this.shadowRoot.querySelector('.play-btn');
+            this.progressIndicator = this.shadowRoot.querySelector('.progress-indicator');
+            this.currentTimeEl = this.progressIndicator.children[0];
+            this.progressBar = this.progressIndicator.children[1];
+            this.durationEl = this.progressIndicator.children[2];
+
         }
 
     }
